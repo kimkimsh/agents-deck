@@ -337,3 +337,36 @@ Commands run at the end, from the repository root:
   than the screen, multi-monitor moves, and Warp focus across workspaces.
 - Whether the docs read clearly to someone new to the project: they were
   checked against the code, not tested on a reader.
+
+## 8. Packaging: one executable, an icon, a launcher
+
+Asked for: build agents-deck into a program that starts from a double-click
+on its icon, give it a good icon, and add a Makefile so anyone can do the
+same.
+
+| Decision | Why |
+|---|---|
+| A zipapp (`python3 -m zipapp`), not PyInstaller | The app needs the system GTK bindings anyway. A zipapp is one 88 KB file, needs only the standard library to build, and runs on `/usr/bin/python3`. PyInstaller would bundle Python and GTK typelibs, which is large and breaks easily. |
+| The package's own `__main__.py` is the zipapp's entry | `zipapp --main` generates an entry that drops the exit status of `main()`. Reusing the file keeps one entry point and keeps the status. |
+| Desktop entry named after the app id (`dev.agentsdeck.AgentsDeck.desktop`) | GNOME Shell matches a window to its app through `_GTK_APPLICATION_ID`; with the same name the running deck gets the new icon. |
+| Makefile reads the app id and name from `AppConstants` | One definition of each; the desktop-entry template gets them by substitution. |
+| Desktop launcher marked trusted with `gio set … metadata::trusted true` | The desktop icons extension (`ding`) runs a launcher only when it is executable and trusted. If `gio` fails, the user is told to choose Allow Launching. |
+| No `gtk-update-icon-cache` | The user icon folder had no cache; creating one would hide icons other apps add later without updating it. `make install` touches the folder instead, so GTK distrusts a cache older than the new icon. |
+| Icon drawn by `tools/render_app_icon.py` from the real sprites | The icon cannot drift from the characters. A smooth squircle plate in the sprites' ink colours, a warm glow taken from the Claude body colour, characters at a whole-number scale per size: the idle hero up to 48 px, the hero with its thought bubble at 64 and 96 px, the three-character lineup from 128 px. No 16 px icon, because the hero cannot be drawn below one screen pixel per sprite pixel. |
+
+Verification, run here:
+
+| Check | Result |
+|---|---|
+| `make` | builds `build/agents-deck` (zipapp, `#!/usr/bin/python3`), 8 icon sizes, the desktop entry; `desktop-file-validate` silent |
+| `build/agents-deck --dump-snapshot`, run from `/tmp` | 3 live sessions, 0.60 s |
+| `tests/test_app_icon.py` | 2 tests OK; fails with a 16 px size (scale 0) and with a 97 % fill (content wider than the plate) |
+| `make install` | 4 files plus 8 PNGs, all under `$HOME`; launcher `metadata::trusted: true` |
+| `gio launch ~/Desktop/agents-deck.desktop` (what a double-click does) | process `agents-deck` on `/usr/bin/python3.12`; window `_GTK_APPLICATION_ID = dev.agentsdeck.AgentsDeck`, `WM_CLASS = agents-deck`; no output on stderr |
+| Second launch through the app menu entry (`gtk-launch`) | still one process; the running deck is brought forward |
+| SIGTERM | clean exit |
+| `pyright` | 0 errors |
+
+Not verified: a physical double-click on the desktop icon (the `gio launch`
+path is the same launcher code, but the click itself was not made), and
+how the icon looks in the dock and app grid.

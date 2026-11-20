@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=@APP_NAME@
+GenericName=Agent Status Deck
+Comment=See what every coding agent in your Warp panes is doing
+Exec=@BINDIR@/@APP_NAME@
+Icon=@APP_ID@
+Terminal=false
+StartupNotify=false
+Categories=Development;
+Keywords=claude;codex;antigravity;agy;warp;agent;

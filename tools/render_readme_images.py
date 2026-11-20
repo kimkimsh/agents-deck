@@ -30,8 +30,11 @@ from agents_deck.ui.sprite_art import SpriteArt
 from agents_deck.ui.sprite_atlas import SpriteAtlas
 from agents_deck.ui.sprite_palette import SpritePalette
 from agents_deck.ui.tile_view import TileView
+from tools.render_app_icon import paintIcon
 
 SCALE = 4
+# Shown at half this width in the README, so HiDPI screens get every pixel.
+README_ICON_SIZE = 256
 MARGIN_PX = 28
 FRAME_MS = 50
 LOOP_MS = 2000
@@ -162,11 +165,13 @@ def main() -> int:
     tOutDir = sys.argv[1]
     os.makedirs(tOutDir, exist_ok=True)
     tArt = SpriteArt()
-    tAtlas = SpriteAtlas(tArt, SpritePalette())
+    tPalette = SpritePalette()
+    tAtlas = SpriteAtlas(tArt, tPalette)
     tPainter = DeckPainter(tAtlas, tArt)
     renderDeck(tPainter, tOutDir, True, "deck-dark.gif")
     renderDeck(tPainter, tOutDir, False, "deck-light.gif")
     renderStates(tAtlas, tOutDir)
+    paintIcon(tAtlas, tPalette, README_ICON_SIZE).write_to_png(os.path.join(tOutDir, "icon.png"))
     return 0
 
 

@@ -157,7 +157,11 @@ agents_deck/
                        SpriteArt, SpritePalette, SpriteAtlas, SpriteAnimator,
                        TooltipContent, TooltipWindow, SettingsWindow, Tween, …
 tests/                 unittest, synthetic data only
-tools/                 render_readme_images.py (README images from demo sessions)
+tools/                 render_readme_images.py (README images from demo sessions),
+                       render_app_icon.py (the app icon, drawn from the same sprites)
+data/                  desktop-entry.in (template for the app-menu entry)
+Makefile               builds build/agents-deck (a zipapp: one file, run by the
+                       system python3) and installs it for the current user
 ```
 
 Code style follows the owner's global rules, adapted to Python: classes

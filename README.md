@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/images/icon.png" width="128" alt="agents-deck app icon: three pixel-art characters on a dark rounded square">
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/deck-dark.gif">
   <img src="docs/images/deck-light.gif" width="440" alt="Six pixel-art characters on a small floating shelf, each showing what one coding agent is doing">
@@ -89,6 +91,8 @@ For programs a Codex session started, it also lists their program names.
   sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0
   ```
 
+- **make**, to build and install it (`sudo apt install make` if missing).
+
 Nothing is installed with `pip`.
 
 ## Install and run
@@ -96,8 +100,34 @@ Nothing is installed with `pip`.
 ```bash
 git clone https://github.com/kimkimsh/agents-deck.git
 cd agents-deck
+make install
+```
+
+Then double-click **agents-deck** on your desktop. You can also press the
+Super key, type `agents-deck` and press Enter. To keep it in the dock, open
+Show Applications, right-click **agents-deck** and choose **Pin to Dash**.
+
+`make install` needs no root and writes only into your home folder:
+
+| What | Where |
+|---|---|
+| The program: one file, run by `/usr/bin/python3` | `~/.local/bin/agents-deck` |
+| The icon, one PNG per size | `~/.local/share/icons/hicolor/<size>/apps/dev.agentsdeck.AgentsDeck.png` |
+| The app-menu entry | `~/.local/share/applications/dev.agentsdeck.AgentsDeck.desktop` |
+| The desktop launcher, marked trusted so a double-click runs it | `~/Desktop/agents-deck.desktop` |
+
+The installed program is a copy, so after a `git pull` run `make install`
+again. `make uninstall` removes those four files and keeps your settings.
+`make` on its own only builds them into `build/`.
+
+You can also run it straight from the source folder, without installing:
+
+```bash
 python3 -m agents_deck
 ```
+
+Starting it again while it runs brings the deck forward; there is never a
+second deck.
 
 The deck appears at the bottom centre of your screen. On the first run the
 shelf behind the characters stays visible for four seconds so you can see
@@ -181,6 +211,15 @@ updates. When a format is not recognised, the character fades rather than
 showing a wrong state.
 
 ## Troubleshooting
+
+Some fixes below ask you to read agents-deck's messages. It prints them to
+the terminal it was started from. If you started it from its icon, quit it
+(gear, then **Quit agents-deck**) and run `agents-deck` in a terminal instead.
+
+**Double-clicking the desktop icon opens a text editor, or asks whether to
+trust it.**
+The launcher was not marked trusted (`make install` uses `gio` for that and
+says so when it fails). Right-click the icon and choose **Allow Launching**.
 
 **An agent is running but has no character.**
 It has to run inside a Warp pane: started from the pane's shell, or with
@@ -284,6 +323,9 @@ python3 -m venv --system-site-packages .venv
 The image script draws demo sessions with the real renderer. It never
 captures your screen. It needs Pillow: run it with `.venv/bin/python`, or
 install `python3-pil`.
+
+The app icon is drawn from the same sprites by `tools/render_app_icon.py`,
+which `make` runs. It needs only pycairo.
 
 - `docs/design.md`: how it works and why it is built this way.
 - `docs/work_log/`: the build log, with the evidence behind each decision.
