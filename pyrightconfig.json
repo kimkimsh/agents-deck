@@ -1,0 +1,12 @@
+{
+  "include": [
+    "agents_deck",
+    "tests",
+    "tools"
+  ],
+  "pythonVersion": "3.12",
+  "typeCheckingMode": "standard",
+  "reportMissingModuleSource": "none",
+  "venvPath": ".",
+  "venv": ".venv"
+}
